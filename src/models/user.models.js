@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    fullname: {
+    fullName: {
       type: String,
       required: true,
       trim: true,
@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Video",
     },
+    refreshToken: {
+      type:String,
+    }
   },
   {
     timestamps: true,
@@ -45,13 +48,13 @@ const userSchema = new mongoose.Schema(
 );
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 userSchema.methods.ispasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
-userSchema.methods.generateAcessToken = function name() {
+userSchema.methods.generateAccessToken = function () {
  return jwt.sign(
     {
       _id:this._id,
